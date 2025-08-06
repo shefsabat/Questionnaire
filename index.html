@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Know your Man before committing Quiz</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-bottom: 10px;
+      color: #333;
+    }
+    #questionBox {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+    textarea {
+      width: 100%;
+      height: 80px;
+      font-size: 16px;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      resize: none;
+    }
+    button {
+      padding: 10px 18px;
+      font-size: 16px;
+      margin-top: 10px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .result {
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+    }
+    .toxic {
+      background-color: #ffe5e5;
+      border: 1px solid #ff4d4d;
+    }
+    .neutral {
+      background-color: #fff3cd;
+      border: 1px solid #ffc107;
+    }
+    .provider {
+      background-color: #e6ffed;
+      border: 1px solid #28a745;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>20 Questions to know your Man</h2>
+  <div id="questionBox"></div>
+  <textarea id="answerBox" placeholder="Type your answer..."></textarea>
+  <br>
+  <button onclick="nextQuestion()">Next</button>
+
+  <script>
+    const questions = [
+      "What’s a woman’s role in a relationship?",
+      "Would you date a woman who doesn’t cook or clean?",
+      "How do you show love?",
+      "What’s your idea of an ideal first date?",
+      "What type of women turn you off?",
+      "How do you handle being told no?",
+      "Thoughts on gender roles?",
+      "When was the last time you paid for a full date?",
+      "Would you protect your woman?",
+      "Have you ever ghosted someone? Why?",
+      "What’s the biggest thing you’ve done for a woman?",
+      "Would you support a woman through hard times?",
+      "Should women work?",
+      "How do you feel about consistency in a relationship?",
+      "Have you ever paid a woman’s bills?",
+      "What if she wants to wait before intimacy?",
+      "Do you still talk to your ex?",
+      "How do you act when you’re angry?",
+      "How do you respond to boundaries?",
+      "What future are you building?"
+    ];
+
+    const toxicKeywords = ["support her man", "no way", "just do me", "netflix", "high maintenance", "she belongs", "split", "hell no", "red flag", "we're cool", "i go off", "just vibing", "clingy"];
+    const providerKeywords = ["be herself", "not a maid", "time", "planned", "self-respect", "her right", "protect", "always", "got her", "standard", "worth the wait", "done", "step back", "respect", "legacy"];
+
+    let current = 0;
+    const answers = [];
+
+    function showQuestion() {
+      document.getElementById('questionBox').innerText = `Q${current + 1}: ${questions[current]}`;
+      document.getElementById('answerBox').value = "";
+    }
+
+    function analyzeAnswer(answer) {
+      const lower = answer.toLowerCase();
+      let score = 0;
+      providerKeywords.forEach(k => { if (lower.includes(k)) score += 1; });
+      toxicKeywords.forEach(k => { if (lower.includes(k)) score -= 1; });
+      return score;
+    }
+
+    function nextQuestion() {
+      const answer = document.getElementById('answerBox').value.trim();
+      if (answer === "") {
+        alert("Please enter an answer.");
+        return;
+      }
+
+      const score = analyzeAnswer(answer);
+      answers.push({ question: questions[current], answer, score });
+      current++;
+
+      if (current < questions.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      let html = `<h2>Results</h2>`;
+      let totalScore = 0;
+
+      answers.forEach((item, i) => {
+        totalScore += item.score;
+        let className = item.score > 0 ? "provider" : item.score < 0 ? "toxic" : "neutral";
+        let label = item.score > 0 ? "✅ Provider" : item.score < 0 ? "🚩 Toxic" : "⚠️ Neutral";
+
+        html += `<div class="result ${className}">
+          <strong>Q${i + 1}:</strong> ${item.question}<br>
+          <em>Answer:</em> ${item.answer}<br>
+          <strong>Verdict:</strong> ${label}
+        </div>`;
+      });
+
+      html += `<h3 style="margin-top: 30px;">Overall Score: ${totalScore}</h3>`;
+
+      let overall = "⚠️ Mixed Signals.";
+      if (totalScore >= 10) overall = "✅ Looks like a solid provider!";
+      else if (totalScore <= -5) overall = "🚩 High Toxicity Detected!";
+      else if (totalScore <= 2) overall = "🤔 Needs deeper conversation.";
+
+      html += `<p><strong>Final Analysis:</strong> ${overall}</p>`;
+      document.body.innerHTML = html;
+    }
+
+    // Start
+    showQuestion();
+  </script>
+</body>
+</html>
